@@ -1,4 +1,11 @@
 [[package]]
 name = "rtrpc"
 version = "0.0.0"
+dependencies = [
+ "rtrpc_graph 0.0.0",
+]
+
+[[package]]
+name = "rtrpc_graph"
+version = "0.0.0"
 
