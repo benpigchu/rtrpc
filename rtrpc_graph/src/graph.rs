@@ -31,6 +31,9 @@ impl Graph {
     pub fn edges(&self, node: &str) -> Option<&Vec<(String, f64)>> {
         self.nodes.get(node)
     }
+    pub fn contains_node(&self, node: &str) -> bool {
+        self.nodes.contains_key(node)
+    }
 }
 
 pub trait IntoEdge {
@@ -100,4 +103,9 @@ fn graph_construction() {
     check_edge("c", vec![("e", 4.0), ("e", -4.0)]);
     check_edge("d", vec![("c", 3.0)]);
     check_edge("e", vec![]);
+    assert!(graph.contains_node("a"));
+    assert!(graph.contains_node("b"));
+    assert!(graph.contains_node("c"));
+    assert!(graph.contains_node("d"));
+    assert!(graph.contains_node("e"));
 }
