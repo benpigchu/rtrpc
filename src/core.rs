@@ -1,4 +1,4 @@
-use rtrpc_graph::*;
+use rtrpc_common::*;
 use std::collections::{HashMap, VecDeque};
 
 /// Calculate the shortest path from start to end with the Bellman–Ford algorithm.

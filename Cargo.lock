@@ -377,14 +377,14 @@ name = "rtrpc"
 version = "0.0.0"
 dependencies = [
  "futures 0.1.25 (registry+https://github.com/rust-lang/crates.io-index)",
- "rtrpc_graph 0.0.0",
+ "rtrpc_common 0.0.0",
  "tokio 0.1.15 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio-core 0.1.17 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio-io 0.1.11 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
 
 [[package]]
-name = "rtrpc_graph"
+name = "rtrpc_common"
 version = "0.0.0"
 
 [[package]]
