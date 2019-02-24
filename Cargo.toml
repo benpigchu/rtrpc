@@ -8,4 +8,8 @@ edition = "2018"
 members = ["rtrpc_graph"]
 
 [dependencies]
+futures = "0.1"
+tokio = "0.1"
+tokio-io = "0.1"
+tokio-core = "0.1"
 rtrpc_graph = { path = "rtrpc_graph" }
