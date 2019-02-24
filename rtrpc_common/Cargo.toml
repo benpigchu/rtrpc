@@ -5,3 +5,5 @@ authors = ["Ben Pig Chu <benpichu@gmail.com>"]
 edition = "2018"
 
 [dependencies]
+tokio = "0.1"
+bytes = "0.4"
