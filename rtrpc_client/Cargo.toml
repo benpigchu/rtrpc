@@ -1,15 +1,13 @@
 [package]
-name = "rtrpc"
-version = "0.0.0"
+name = "rtrpc_client"
+version = "0.1.0"
 authors = ["Ben Pig Chu <benpichu@gmail.com>"]
 edition = "2018"
-
-[workspace]
-members = ["rtrpc_common","rtrpc_client"]
 
 [dependencies]
 futures = "0.1"
 tokio = "0.1"
 tokio-io = "0.1"
 tokio-core = "0.1"
-rtrpc_common = { path = "rtrpc_common" }
+bytes = "0.4"
+rtrpc_common = { path = "../rtrpc_common" }
