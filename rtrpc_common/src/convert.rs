@@ -6,7 +6,7 @@ trait TryGet: Sized {
 }
 
 trait Put {
-    fn put(&self, buf: &mut BufMut);
+    fn put(&self, buf: &mut BytesMut);
 }
 
 #[cfg(test)]
@@ -25,7 +25,8 @@ impl TryGet for f64 {
 }
 
 impl Put for f64 {
-    fn put(&self, buf: &mut BufMut) {
+    fn put(&self, buf: &mut BytesMut) {
+        buf.reserve(8);
         buf.put_f64_be(*self);
     }
 }
@@ -51,14 +52,15 @@ impl TryGet for u8 {
 }
 
 impl Put for str {
-    fn put(&self, buf: &mut BufMut) {
+    fn put(&self, buf: &mut BytesMut) {
+        buf.reserve(4 + self.len());
         buf.put_u32_be(self.len() as u32);
         buf.put_slice(self.as_bytes());
     }
 }
 
 impl Put for String {
-    fn put(&self, buf: &mut BufMut) {
+    fn put(&self, buf: &mut BytesMut) {
         self.as_str().put(buf);
     }
 }
@@ -87,7 +89,8 @@ impl<T> Put for Option<T>
 where
     T: Put,
 {
-    fn put(&self, buf: &mut BufMut) {
+    fn put(&self, buf: &mut BytesMut) {
+        buf.reserve(1);
         match self {
             None => buf.put_u8(0),
             Some(data) => {
@@ -122,7 +125,8 @@ where
     T: Put,
     E: Put,
 {
-    fn put(&self, buf: &mut BufMut) {
+    fn put(&self, buf: &mut BytesMut) {
+        buf.reserve(1);
         match self {
             Err(err) => {
                 buf.put_u8(0);
@@ -160,7 +164,8 @@ impl<T> Put for Vec<T>
 where
     T: Put,
 {
-    fn put(&self, buf: &mut BufMut) {
+    fn put(&self, buf: &mut BytesMut) {
+        buf.reserve(4);
         buf.put_u32_be(self.len() as u32);
         for item in self {
             item.put(buf)
@@ -193,7 +198,7 @@ where
     T2: Put,
     T3: Put,
 {
-    fn put(&self, buf: &mut BufMut) {
+    fn put(&self, buf: &mut BytesMut) {
         let (first, second, third) = self;
         first.put(buf);
         second.put(buf);
@@ -225,7 +230,7 @@ fn triple_convert() {
 }
 
 impl Put for NegativeCycle {
-    fn put(&self, _buf: &mut BufMut) {}
+    fn put(&self, _buf: &mut BytesMut) {}
 }
 
 impl TryGet for NegativeCycle {
@@ -235,7 +240,7 @@ impl TryGet for NegativeCycle {
 }
 
 impl Put for Graph {
-    fn put(&self, buf: &mut BufMut) {
+    fn put(&self, buf: &mut BytesMut) {
         let vec: Vec<_> = self.clone().into();
         vec.put(buf);
     }
