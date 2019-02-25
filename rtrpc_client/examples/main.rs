@@ -1,6 +1,7 @@
 use futures::Future;
 use rtrpc_client::*;
 use rtrpc_common::*;
+use std::env::args;
 use tokio_core::reactor::Core;
 
 fn main() {
@@ -18,7 +19,12 @@ fn main() {
     ]);
     let mut core = Core::new().unwrap();
     let handle = core.handle();
-    let addr = "127.0.0.1:12345".parse().unwrap();
+    let argvec = args().collect::<Vec<_>>();
+    let arg1 = match argvec.len() {
+        1=>panic!("IP address not provided"),
+        _=>&argvec[1]
+    };
+    let addr = arg1.parse().unwrap();
     let client = Client::new(handle, addr);
     let mut request=|graph,start,end|{
         println!("request : {:?}", (graph, start, end));
