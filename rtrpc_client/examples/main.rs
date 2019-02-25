@@ -16,20 +16,23 @@ fn main() {
         ("f", "h", 2.0),
         ("h", "f", 2.0),
     ]);
-    let start = "a";
-    let end = "e";
     let mut core = Core::new().unwrap();
     let handle = core.handle();
     let addr = "127.0.0.1:12345".parse().unwrap();
     let client = Client::new(handle, addr);
-    println!("request : {:?}", (&graph, &start, &end));
-    let rpc = client
-        .shortest_path(&graph, &start, &end)
-        .map(|result| {
-            println!("result : {:?}", result);
-        })
-        .map_err(|err| {
-            println!("error : {:?}", err);
-        });
-    core.run(rpc).unwrap();
+    let mut request=|graph,start,end|{
+        println!("request : {:?}", (graph, start, end));
+        let rpc = client
+            .shortest_path(graph, start, end)
+            .map(|result| {
+                println!("result : {:?}", result);
+            })
+            .map_err(|err| {
+                println!("error : {:?}", err);
+            });
+        core.run(rpc).unwrap();
+    };
+    request(&graph,"a","e");
+    request(&graph,"f","h");
+    request(&graph,"a","i");
 }
