@@ -6,15 +6,19 @@ use tokio::codec::Framed;
 use tokio_core::net::TcpListener;
 use tokio_core::reactor::Handle;
 
+/// A server used to recieve rpc request
 pub struct Server {
     handle: Handle,
     addr: SocketAddr,
 }
 
 impl Server {
+	/// Create a server with the handle and address used to listen
     pub fn new(handle: Handle, addr: SocketAddr) -> Self {
         Server { handle, addr }
     }
+	/// Consume the server and returns the serving Future,
+	/// fail when failed to listen the Ip address
     pub fn serve(self) -> Result<impl Future<Item = (), Error = Error>, Error> {
         let future = TcpListener::bind(&self.addr, &self.handle)?
             .incoming()

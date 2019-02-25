@@ -98,6 +98,7 @@ fn shortest_path_test() {
     );
 }
 
+/// The packet transformation method.
 pub fn process_packet(packet: Packet) -> Option<Packet> {
     let Packet { id, payload } = packet;
     let (graph, start, end) = decode_request(payload)?;
