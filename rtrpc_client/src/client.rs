@@ -1,33 +1,39 @@
 use futures::{Future, Sink, Stream};
 use rtrpc_common::*;
 use std::io::{Error, ErrorKind};
+use std::net::SocketAddr;
 use tokio::codec::Framed;
 use tokio_core::net::TcpStream;
-use tokio_core::reactor::Core;
+use tokio_core::reactor::Handle;
 
-fn main() {
-    let graph = Graph::from_edges(&[
-        ("a", "b", 1.0),
-        ("b", "c", 2.0),
-        ("a", "c", 4.0),
-        ("d", "c", 3.0),
-        ("c", "e", -4.0),
-        ("c", "e", 4.0),
-        ("f", "g", 4.0),
-        ("g", "f", -6.0),
-        ("f", "h", 2.0),
-        ("h", "f", 2.0),
-    ]);
-    let mut core = Core::new().unwrap();
-    let handle = core.handle();
-    let addr = "127.0.0.1:12345".parse().unwrap();
-    let client = TcpStream::connect(&addr, &handle)
-        .and_then(|sock| {
+/// A client used to invoke rpc request
+pub struct Client {
+    handle: Handle,
+    addr: SocketAddr,
+}
+
+impl Client {
+    /// Create a client with the handle and address of the server
+    pub fn new(handle: Handle, addr: SocketAddr) -> Self {
+        Client { handle, addr }
+    }
+    /// Find the shortest path from the start point to the end point
+    pub fn shortest_path(
+        &self,
+        graph: &Graph,
+        start: &str,
+        end: &str,
+    ) -> impl Future<Item = Result<Option<Vec<String>>, NegativeCycle>, Error = Error> {
+        let graph = graph.clone();
+        let start = String::from(start);
+        let end = String::from(end);
+        // currently we create one connection for each request.
+        TcpStream::connect(&self.addr, &self.handle).and_then(move |sock| {
             let (sink, stream) = Framed::new(sock, PacketCodec::new()).split();
             let send = sink
                 .send(Packet {
                     id: 0xDEADBEEF,
-                    payload: encode_request(&graph, "a", "e"),
+                    payload: encode_request(&graph, &start, &end),
                 })
                 .and_then(|sink| sink.flush());
             let recieve = stream
@@ -46,16 +52,7 @@ fn main() {
                         Err(Error::new(ErrorKind::InvalidData, "No packet returned."))
                     }
                 });
-            send.join(recieve).then(|result| {
-                match result {
-                    Ok((_, result)) => println!("finished: {:?}", result),
-                    Err(e) => println!("error: {}", e),
-                }
-                Ok(())
-            })
+            send.join(recieve).and_then(|(_, result)| Ok(result))
         })
-        .map_err(|err| {
-            println!("connection error = {:?}", err);
-        });
-    core.run(client).unwrap();
+    }
 }

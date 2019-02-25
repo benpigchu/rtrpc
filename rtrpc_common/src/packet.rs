@@ -43,6 +43,7 @@ fn packet_encode() {
     assert_eq!(packet, Packet::from(bytes))
 }
 
+/// A codec that turns socket into Stream and Sink of Packet
 pub struct PacketCodec {
     inner: LengthDelimitedCodec,
 }

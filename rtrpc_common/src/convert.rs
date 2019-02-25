@@ -1,10 +1,12 @@
 use crate::graph::*;
 use bytes::*;
 
+// A util trait used to get value from buffers
 trait TryGet: Sized {
     fn try_get(buf: &mut Buf) -> Option<Self>;
 }
 
+// A util trait used to put value to buffers
 trait Put {
     fn put(&self, buf: &mut BytesMut);
 }
