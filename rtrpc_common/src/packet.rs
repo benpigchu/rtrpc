@@ -1,7 +1,7 @@
 use bytes::{Bytes, BytesMut};
 use tokio::codec::*;
 
-///
+/// The unit of information between client and server
 #[derive(Debug, PartialEq, Clone)]
 pub struct Packet {
     pub id: u32,

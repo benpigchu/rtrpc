@@ -2,6 +2,7 @@ use std::collections::{hash_map, HashMap};
 
 /// A directed graph represented with an adjacency list,
 /// which allowing self loop and parallel edges
+#[derive(Debug, PartialEq, Clone)]
 pub struct Graph {
     nodes: HashMap<String, Vec<(String, f64)>>,
 }
@@ -33,6 +34,24 @@ impl Graph {
     }
     pub fn contains_node(&self, node: &str) -> bool {
         self.nodes.contains_key(node)
+    }
+}
+
+impl Into<Vec<(String, String, f64)>> for Graph {
+    fn into(self) -> Vec<(String, String, f64)> {
+        let mut vec: Vec<(String, String, f64)> = Vec::new();
+        for node in self.nodes() {
+            for (target, weight) in self.edges(node).unwrap() {
+                vec.push((node.clone(), target.clone(), *weight))
+            }
+        }
+        vec
+    }
+}
+
+impl From<Vec<(String, String, f64)>> for Graph {
+    fn from(vec: Vec<(String, String, f64)>) -> Self {
+        Self::from_edges(vec)
     }
 }
 
@@ -108,4 +127,11 @@ fn graph_construction() {
     assert!(graph.contains_node("c"));
     assert!(graph.contains_node("d"));
     assert!(graph.contains_node("e"));
+    let vec: Vec<_> = graph.clone().into();
+    assert_eq!(graph, Graph::from(vec));
 }
+
+/// An error type indicate that a negative cycle
+/// can be reached from the start point
+#[derive(Debug, PartialEq)]
+pub struct NegativeCycle();
