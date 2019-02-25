@@ -101,7 +101,9 @@ fn shortest_path_test() {
 pub fn process_packet(packet: Packet) -> Option<Packet> {
     let Packet { id, payload } = packet;
     let (graph, start, end) = decode_request(payload)?;
+    println!("request : {:?}", (&graph, &start, &end));
     let result = shortest_path(&graph, start.as_str(), end.as_str());
+    println!("result : {:?}", result);
     Some(Packet {
         id,
         payload: encode_respond(result),
